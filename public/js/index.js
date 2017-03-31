@@ -7,14 +7,6 @@ socket.on('connect',function(){
 
     //socket.emit('createMessage',{from: 'ovenje@gmail.com',text: "how far u"})
     //do this from chrome developer's console
-
-    socket.on('welcomeMessage',function(messageData){
-        console.log(messageData);
-    });
-    socket.on('newUserMessage',function(data){
-        console.log(data.name+' '+data.text);
-    });
-
 });
 
 socket.on('disconnect',function(){
@@ -23,3 +15,6 @@ socket.on('disconnect',function(){
 socket.on('newMessage',function(message){
     console.log(message);
 });
+socket.emit('createMessage',{from: 'ovenje@gmail.com',text: "how far u"},function(data){
+    console.log(data);
+})

@@ -18,9 +18,10 @@ io.on('connection',(socket)=>{
     socket.emit('newMessage',generateMessage('admin','welcome to the chat'));
     socket.broadcast.emit('newMessage',generateMessage('admin','new user joined the chat'));
     
-    socket.on('createMessage',(message)=>{
+    socket.on('createMessage',(message,callback)=>{
         io.emit('newMessage',generateMessage(message.from,message.text));
         //socket.broadcast.emit('newMessage',generateMessage(message.from,message.text));
+        callback('received loud and clear');
     });
 
     socket.on('disconnect',()=>{
