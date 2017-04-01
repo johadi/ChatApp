@@ -15,15 +15,15 @@ var io=socketIO(server);//open a connection from server to the client which allo
 io.on('connection',(socket)=>{
     console.log('a new user is connected');
 
-    socket.emit('newMessage',generateMessage('admin','welcome to the chat'));
-    socket.broadcast.emit('newMessage',generateMessage('admin','new user joined the chat'));
+    socket.emit('newMessage',generateMessage('Admin','welcome to the chat'));
+    socket.broadcast.emit('newMessage',generateMessage('Admin','new user joined the chat'));
     
     socket.on('createMessage',(message,callback)=>{
         io.emit('newMessage',generateMessage(message.from,message.text));
-        callback('received loud and clear');
+        callback();
     });
     socket.on('createLocationMessage',(coord)=>{
-        io.emit('newLocationMessage', generateLocationMessage('admin',coord.latitude,coord.longitude));
+        io.emit('newLocationMessage', generateLocationMessage('Admin',coord.latitude,coord.longitude));
     })
 
 
