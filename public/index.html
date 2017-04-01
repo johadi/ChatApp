@@ -6,7 +6,15 @@
 </head>
 <body>
 <h2>Welcome to Jochat</h2>
+
+<ol id="messages"></ol>
+
+<form id="message-form">
+    <input type="text" name="message" placeholder="Your Message"/>
+    <button>send</button>
+</form>
 <script src="/socket.io/socket.io.js"></script>
+<script src="/js/libs/jquery-3.2.0.min.js"></script>
 <script src="/js/index.js"></script>
 
 </body>
