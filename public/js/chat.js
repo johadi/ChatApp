@@ -25,7 +25,7 @@ function scrollToBottom(){
 socket.on('connect',function(){
     var params=jQuery.deparam(window.location.search);//convert your url query string (i.e ?name=jo&age=20) to object
 
-    socket.emit('join',params,function(err){
+    socket.emit('join',params,function(err){//join a room by the username and room you choose
         if(err){
             alert(err);
             window.location.href='/';
@@ -39,17 +39,16 @@ socket.on('disconnect',function(){
     console.log('disconnected from server');
 });
 
-socket.on('updateUserList',function(usersList){
-    // var template=jQuery('#chat-people');
-    // var output=Mustache.render(template,userList);
+socket.on('updateUserList',function(usersList){//where active users are displayed
     var ol=jQuery('<ol></ol>');
     usersList.forEach(function(userList){
         ol.append(jQuery('<li></li>').text(userList));
     });
     jQuery('#users').html(ol);
+    jQuery('#online').text('| online: '+usersList.length);
 });
 
-socket.on('newMessage',function(message){
+socket.on('newMessage',function(message){//where coming messages are appended
     var formattedTime=moment(message.createdAt).format('h:mm a');
     var template=jQuery('#message-template').html();
     var output=Mustache.render(template,{
@@ -61,7 +60,7 @@ socket.on('newMessage',function(message){
     scrollToBottom();
 });
 
-socket.on('newLocationMessage',function(message){
+socket.on('newLocationMessage',function(message){//where user locations are appended
     var formattedTime=moment(message.createdAt).format('h:mm a');
     var template=jQuery('#location-message-template').html();
     var output=Mustache.render(template,{
@@ -79,23 +78,22 @@ socket.on('newLocationMessage',function(message){
     // li.append(a);
     // jQuery('#messages').append(li);
 });
-jQuery('#message-form').on('submit',function(e){
-    e.preventDefault();
+jQuery('#message-form').on('submit',function(e){//handles the message form field
+    e.preventDefault();//prevents the form from reloading on submit
 
-    var messageTextBox=jQuery('[name=message]');
+    var messageTextBox=jQuery('[name=message]');//get the message box id
     socket.emit('createMessage', {
-        from: 'User',
         text: messageTextBox.val()
         },
         function(){
-            messageTextBox.val('');
+            messageTextBox.val('');//empty the message field once the user sent it
         }
         );
 });
 
 var locationButton=jQuery('#send-location');
 
-locationButton.on('click',function(){
+locationButton.on('click',function(){//handles the location button using geolocation available in our browsers
     if(!navigator.geolocation){
         return alert('Geolocation not supported for your browser');
     }
