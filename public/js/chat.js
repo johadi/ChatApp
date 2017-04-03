@@ -2,16 +2,53 @@
  * Created by ILYASANATE on 29/03/2017.
  */
 var socket=io();
-socket.on('connect',function(){
-    console.log('connected to server');
 
-    //socket.emit('createMessage',{from: 'ovenje@gmail.com',text: "how far u"})
-    //do this from chrome developer's console
+//function that performs the scrolling to bottom automatically as messages trickles in
+function scrollToBottom(){
+    //selectors
+    var messages=jQuery('#messages');
+
+    var newMessage=messages.children('li:last-child');
+
+    //heights
+    var clientHeight=messages.prop('clientHeight');
+    var scrollTop=messages.prop('scrollTop');
+    var scrollHeight=messages.prop('scrollHeight');
+    var newMessageHeight=newMessage.innerHeight();
+    var lastMessageHeight=newMessage.prev().innerHeight();
+
+    if(clientHeight + scrollTop + newMessageHeight+ lastMessageHeight >= scrollHeight){
+        messages.scrollTop(scrollHeight);
+    }
+}
+
+socket.on('connect',function(){
+    var params=jQuery.deparam(window.location.search);//convert your url query string (i.e ?name=jo&age=20) to object
+
+    socket.emit('join',params,function(err){
+        if(err){
+            alert(err);
+            window.location.href='/';
+        }else{
+            console.log('all is working well');
+        }
+    })
 });
 
 socket.on('disconnect',function(){
     console.log('disconnected from server');
 });
+
+socket.on('updateUserList',function(usersList){
+    // var template=jQuery('#chat-people');
+    // var output=Mustache.render(template,userList);
+    var ol=jQuery('<ol></ol>');
+    usersList.forEach(function(userList){
+        ol.append(jQuery('<li></li>').text(userList));
+    });
+    jQuery('#users').html(ol);
+});
+
 socket.on('newMessage',function(message){
     var formattedTime=moment(message.createdAt).format('h:mm a');
     var template=jQuery('#message-template').html();
@@ -21,10 +58,7 @@ socket.on('newMessage',function(message){
         createdAt: formattedTime
     });
     jQuery('#messages').append(output);
-
-    // var li=jQuery('<li></li>');
-    // li.text(`${message.from} ${formattedTime} : ${message.text}`);
-    // jQuery('#messages').append(li);
+    scrollToBottom();
 });
 
 socket.on('newLocationMessage',function(message){
@@ -36,6 +70,7 @@ socket.on('newLocationMessage',function(message){
         createdAt: formattedTime
     });
     jQuery('#messages').append(output);
+    scrollToBottom();
     // var li=jQuery('<li></li>');
     // var a=jQuery('<a target="_blank">My Current Location</a>');
     //
