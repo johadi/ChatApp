@@ -20,7 +20,7 @@ io.on('connection',(socket)=>{
     console.log('a new user is connected');
 
     socket.on('join',(params,callback)=>{
-        if(!isRealString(params.name) || !isRealString(params.room)){
+        if(!isRealString(params.name) || !isRealString(params.room) || params.room==='-Select Room-'){
             return callback('Display name and Room name required!');
         }
         socket.join(params.room);
@@ -29,7 +29,7 @@ io.on('connection',(socket)=>{
 
         io.to(params.room).emit('updateUserList',chatUsers.getUserList(params.room));
         //socket.leave(params.room) //to leave a room
-        socket.emit('newMessage',generateMessage('Admin','welcome to the chat'));
+        socket.emit('newMessage',generateMessage('Admin',`welcome to ${params.room} chat room`));
         socket.broadcast.to(params.room).emit('newMessage',generateMessage('Admin',`${params.name} joined the chat`));
         callback();
     });
@@ -38,7 +38,8 @@ io.on('connection',(socket)=>{
         var user=chatUsers.getUser(socket.id);
 
         if(user && isRealString(message.text)){
-            io.to(user.room).emit('newMessage',generateMessage(user.name,message.text));
+            socket.broadcast.to(user.room).emit('newMessage',generateMessage(user.name,message.text));
+            socket.emit('newMessage',generateMessage('You',message.text));
         }
         callback();
     });
@@ -46,7 +47,8 @@ io.on('connection',(socket)=>{
         var user=chatUsers.getUser(socket.id);
 
         if(user){
-            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name,coord.latitude,coord.longitude));
+            socket.broadcast.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name,coord.latitude,coord.longitude));
+            socket.emit('newLocationMessage', generateLocationMessage('You',coord.latitude,coord.longitude));
         }
     })
 
