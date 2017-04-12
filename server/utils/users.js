@@ -1,7 +1,6 @@
 /**
- * Created by ILYASANATE on 03/04/2017.
+ * Created by ILYASANATE on 05/04/2017.
  */
-
 class Users{
     constructor(){
         this.users=[];
